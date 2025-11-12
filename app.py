@@ -24,7 +24,6 @@ Original file is located at
  - gradio: for building the interactive web interface.
 """
 
-!pip install -q langchain langchain-core langchain-community langchain-huggingface faiss-cpu sentence-transformers PyPDF2 transformers torch gradio
 
 """## **STEP 2 — Import Updated Libraries**"""
 
@@ -186,5 +185,7 @@ with gr.Blocks(theme = gr.themes.Soft()) as rag_chatbot:
 
 """## **STEP 7 — Launch the Gradio Interface**"""
 
-rag_chatbot.launch(share=True)
+if __name__ == "__main__":
+    rag_chatbot.launch()
+
 

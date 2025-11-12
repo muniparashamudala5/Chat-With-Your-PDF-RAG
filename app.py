@@ -108,49 +108,50 @@ def load_llm():
 # ✅ Updated and syntax-safe ask_question() function
 # ------------------------------------------------------------
 def ask_question(pdf_file, question):
-    # Step 1: Check if user uploaded a PDF
+
+  try:
+    # if no file is uploaded, return a message
     if pdf_file is None:
-        return "⚠️ Please upload a PDF file first."
+      return "⚠️ Please upload a PDF file first."
 
-    # Step 2: Process the PDF and create the FAISS vectorstore
-    try:
-        vectorstore = process_pdf(pdf_file)
-        retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
-    except Exception as e:
-        return f"❌ PDF processing failed: {str(e)}"
+    # 1️⃣ Build the vectorstore (extract text + embed)
+    vectorstore, _ = process_pdf(pdf_file)
+    retriever = vectorstore.as_retriever(search_kwargs={"k":3})
 
-    # Step 3: Retrieve relevant chunks using the new API
-    try:
-        docs = retriever.invoke(question)
-    except Exception as e:
-        return f"❌ Retrieval failed: {str(e)}"
+    # 2️⃣ Load the LLM
+    llm = load_llm()
 
-    # Step 4: Combine relevant chunks into one context string
-    context = "\n".join([d.page_content for d in docs]) if docs else "No relevant context found."
+    # 3️⃣ Define the question-answering prompt
+    prompt = PromptTemplate(
 
-    # Step 5: Build the full input prompt for the model
-    prompt = f"Context:\n{context}\n\nQuestion: {question}\n\nAnswer:"
+        input_variables = ["context", "question"],
+        template = (
 
-    # Step 6: Generate the answer using the LLM
-    try:
-        response = llm.invoke(prompt)
-    except Exception as e:
-        return f"❌ Model generation failed: {str(e)}"
+        """
 
-    # Step 7: Safely extract clean text from the model output
-    if isinstance(response, dict):
-        output_text = response.get("text", "")
-    elif isinstance(response, list) and len(response) > 0:
-        output_text = response[0].get("generated_text", "")
-    else:
-        output_text = str(response)
+        "Context:\n{context}\n\n"
 
-    # Step 8: Return a readable, clean response
-    final_answer = output_text.strip()
-    if not final_answer:
-        final_answer = "🤖 The model could not generate an answer. Please try rephrasing your question."
+        "Question: {question}\n\n"
 
-    return final_answer
+        "Answer:"
+
+        """
+      )
+    )
+
+    # 4️⃣ Retrieve the most relevant text chunks
+    docs = retriever.get_relevant_documents(question)
+    context = "\n".join([d.page_content for d in docs])
+
+    # 5️⃣ Format the final prompt and generate answer
+    formatted_output = prompt.format(context=context, question=question)
+    output = llm.invoke(formatted_output) # Corrected typo: formatted_prompt -> formatted_output
+
+    return output
+
+  except Exception as e:
+    return f"❌ Error: {str(e)}"
+
 
 
 """## **STEP 6 — Gradio User Interface (Frontend)**"""

@@ -31,10 +31,12 @@ import gradio as gr
 import PyPDF2 as pp
 import torch
 # LangChain modules
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+# ✅ Updated imports for new LangChain structure
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_huggingface import HuggingFacePipeline
+from langchain.chains import RetrievalQA
 from langchain_core.prompts import PromptTemplate
 # Hugging Face utilities
 from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline

@@ -104,14 +104,20 @@ def load_llm():
 # ------------------------------------------------------------
 # ✅ Updated ask_question() function
 # ------------------------------------------------------------
+# ------------------------------------------------------------
+# ✅ Updated and syntax-safe ask_question() function
+# ------------------------------------------------------------
 def ask_question(pdf_file, question):
     # Step 1: Check if user uploaded a PDF
     if pdf_file is None:
         return "⚠️ Please upload a PDF file first."
 
     # Step 2: Process the PDF and create the FAISS vectorstore
-    vectorstore = process_pdf(pdf_file)
-    retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
+    try:
+        vectorstore = process_pdf(pdf_file)
+        retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
+    except Exception as e:
+        return f"❌ PDF processing failed: {str(e)}"
 
     # Step 3: Retrieve relevant chunks using the new API
     try:
@@ -119,7 +125,7 @@ def ask_question(pdf_file, question):
     except Exception as e:
         return f"❌ Retrieval failed: {str(e)}"
 
-    # Step 4: Combine the relevant text chunks into one context string
+    # Step 4: Combine relevant chunks into one context string
     context = "\n".join([d.page_content for d in docs]) if docs else "No relevant context found."
 
     # Step 5: Build the full input prompt for the model
@@ -146,18 +152,6 @@ def ask_question(pdf_file, question):
 
     return final_answer
 
-    # 4️⃣ Retrieve the most relevant text chunks
-    docs = retriever.invoke(question)
-    context = "\n".join([d.page_content for d in docs])
-
-    # 5️⃣ Format the final prompt and generate answer
-    formatted_output = prompt.format(context=context, question=question)
-    output = llm.invoke(formatted_output) # Corrected typo: formatted_prompt -> formatted_output
-
-    return output
-
-    except Exception as e:
-        return f"❌ Error: {str(e)}"
 
 """## **STEP 6 — Gradio User Interface (Frontend)**"""
 

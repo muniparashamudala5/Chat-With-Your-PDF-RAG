@@ -156,8 +156,8 @@ def ask_question(pdf_file, question):
 
     return output
 
-  except Exception as e:
-    return f"❌ Error: {str(e)}"
+    except Exception as e:
+        return f"❌ Error: {str(e)}"
 
 """## **STEP 6 — Gradio User Interface (Frontend)**"""
 

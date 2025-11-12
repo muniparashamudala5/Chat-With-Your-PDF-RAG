@@ -140,7 +140,7 @@ def ask_question(pdf_file, question):
     )
 
     # 4️⃣ Retrieve the most relevant text chunks
-    docs = retriever.get_relevant_documents(question)
+    docs = retriever.invoke(question)
     context = "\n".join([d.page_content for d in docs])
 
     # 5️⃣ Format the final prompt and generate answer

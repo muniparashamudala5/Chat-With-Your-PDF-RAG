@@ -31,7 +31,6 @@ import gradio as gr
 import PyPDF2 as pp
 import torch
 # LangChain modules
-# ✅ Updated imports for new LangChain structure
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
@@ -101,12 +100,6 @@ def load_llm():
 
 """## **STEP 5 — Core RAG Query Function (Retrieval + Generation)**"""
 
-# ------------------------------------------------------------
-# ✅ Updated ask_question() function
-# ------------------------------------------------------------
-# ------------------------------------------------------------
-# ✅ Updated and syntax-safe ask_question() function
-# ------------------------------------------------------------
 def ask_question(pdf_file, question):
 
   try:
@@ -151,8 +144,6 @@ def ask_question(pdf_file, question):
 
   except Exception as e:
     return f"❌ Error: {str(e)}"
-
-
 
 """## **STEP 6 — Gradio User Interface (Frontend)**"""
 
